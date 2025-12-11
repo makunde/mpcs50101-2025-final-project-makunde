@@ -129,6 +129,26 @@ class Tasks:
     def report(self):
         pass
 
+    def delete(self, task_id):
+        """Delete a task by its unique ID.
+        
+        Args:
+            task_id (int): The unique ID of the task to delete
+            
+        Raises:
+            ValueError: If task ID is not found or is invalid
+        """
+        if not isinstance(task_id, int):
+            raise ValueError("Task ID must be an integer")
+
+        for i, task in enumerate(self.tasks):
+            if task.unique_id == task_id:
+                self.tasks.pop(i)
+                formatted_id = self._format_id(task_id)
+                print(f"Deleted task {formatted_id}")
+                return
+        raise ValueError(f"Task ID {task_id} not found")
+
     def done(self, task_id):
         """Mark a task as complete by its unique ID.
         
