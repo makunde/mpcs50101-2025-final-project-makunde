@@ -59,9 +59,35 @@ class Tasks:
         """Picle your task list to a file"""
         # your code here
 
-    # Complete the rest of the methods, change the method definitions as needed
     def list(self):
-        pass
+        """Display a list of incomplete tasks sorted by due date and priority."""
+        incomplete_tasks = [task for task in self.tasks if task.completed is None]
+        if not incomplete_tasks:
+            print("No incomplete tasks.")
+            return
+        sorted_tasks = sorted(
+            incomplete_tasks,
+            key=lambda t: (
+                t.due_date is None,
+                t.due_date if t.due_date is not None else None,
+                -t.priority
+            )
+        )
+        
+        # Print header
+        print(f"{'ID':<5} {'Age':<5} {'Due Date':<11} {'Priority':<10} {'Task'}")
+        print("-" * 70)
+        
+        # Print each task
+        for task in sorted_tasks:
+            task_id = task.unique_id
+            age = (datetime.now().date() - task.created.date()).days
+            age_str = f"{age}d"
+            due_date_str = task.due_date.strftime("%m/%d/%Y") if task.due_date else "-"
+            priority = task.priority
+            name = task.name
+            
+            print(f"{task_id:<5} {age_str:<5} {due_date_str:<11} {priority:<10} {name}")
 
     def report(self):
         pass
@@ -78,7 +104,7 @@ class Tasks:
         Args:
             name (str): The task description
             priority (int): Priority level (1, 2, or 3; default is 1)
-            due (str or None): Optional due date in format M/D/YYYY
+            due (str or None): Optional due date in format MM/DD/YYYY
             
         Returns:
             int: The unique ID of the newly created task
@@ -96,7 +122,7 @@ class Tasks:
             try:
                 parsed_due = datetime.strptime(due, "%m/%d/%Y").date()
             except (ValueError, TypeError):
-                raise ValueError("Due date must be in format M/D/YYYY")
+                raise ValueError("Due date must be in format MM/DD/YYYY")
         
         new_task = Task(name.strip(), priority, parsed_due)
         self.tasks.append(new_task)
