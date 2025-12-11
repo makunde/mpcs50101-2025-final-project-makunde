@@ -78,7 +78,7 @@ class Tasks:
         Args:
             name (str): The task description
             priority (int): Priority level (1, 2, or 3; default is 1)
-            due (str or None): Optional due date in format YYYY-MM-DD
+            due (str or None): Optional due date in format M/D/YYYY
             
         Returns:
             int: The unique ID of the newly created task
@@ -94,9 +94,9 @@ class Tasks:
         parsed_due = None
         if due is not None:
             try:
-                parsed_due = datetime.strptime(due, "%Y-%m-%d").date()
+                parsed_due = datetime.strptime(due, "%m/%d/%Y").date()
             except (ValueError, TypeError):
-                raise ValueError("Due date must be in format YYYY-MM-DD")
+                raise ValueError("Due date must be in format M/D/YYYY")
         
         new_task = Task(name.strip(), priority, parsed_due)
         self.tasks.append(new_task)
