@@ -286,4 +286,3 @@ class Tasks:
         task_id = new_task.unique_id
         formatted_id = self._format_id(task_id)
         print(f"Created Task {formatted_id}")
-        return task_id
