@@ -18,9 +18,9 @@ class Task:
                 - created - date
                 - completed - date
                 - name - string
-                - unique id - number
+                - unique_id - number
                 - priority - int value of 1, 2, or 3; 1 is default
-                - due date - date, this is optional
+                - due_date - date, this is optional
     """
 
     _id_counter = 1
@@ -48,8 +48,7 @@ class Task:
         return f"[{self.unique_id}] {self.name} (Priority: {self.priority}) - {status}{due_str}"
 
 class Tasks:
-   """A list of `Task` objects."""
-   
+    """A list of `Task` objects."""
     def __init__(self):
         """Read pickled tasks file into a list"""
         # List of Task objects
@@ -73,5 +72,34 @@ class Tasks:
     def query(self):
         pass
 
-    def add(self):
-        pass
+    def add(self, name, priority=1, due=None):
+        """Add a new task to the task list.
+        
+        Args:
+            name (str): The task description
+            priority (int): Priority level (1, 2, or 3; default is 1)
+            due (str or None): Optional due date in format YYYY-MM-DD
+            
+        Returns:
+            int: The unique ID of the newly created task
+            
+        Raises:
+            ValueError: If data validation fails
+        """
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError("Task name must be a non-empty string")
+
+        if not isinstance(priority, int) or priority not in [1, 2, 3]:
+            raise ValueError("Priority must be an integer value of 1, 2, or 3")
+        parsed_due = None
+        if due is not None:
+            try:
+                parsed_due = datetime.strptime(due, "%Y-%m-%d").date()
+            except (ValueError, TypeError):
+                raise ValueError("Due date must be in format YYYY-MM-DD")
+        
+        new_task = Task(name.strip(), priority, parsed_due)
+        self.tasks.append(new_task)
+        task_id = new_task.unique_id
+        print(f"Created Task {task_id}")
+        return task_id
