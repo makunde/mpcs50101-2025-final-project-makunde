@@ -60,6 +60,17 @@ class Tasks:
         """Picle your task list to a file"""
         # your code here
 
+    def _format_id(self, task_id):
+        """Format task ID as 4-digit string with leading zeros.
+        
+        Args:
+            task_id (int): The task ID to format
+            
+        Returns:
+            str: Formatted ID as 4-digit string (e.g., "0001")
+        """
+        return f"{task_id:04d}"
+
     def _sort_tasks(self, tasks):
         """Sort tasks by due date and priority.
         
@@ -97,7 +108,7 @@ class Tasks:
         print("-" * 70)
         
         for task in tasks:
-            task_id = task.unique_id
+            task_id = self._format_id(task.unique_id)
             age = (datetime.now().date() - task.created.date()).days
             age_str = f"{age}d"
             due_date_str = task.due_date.strftime("%m/%d/%Y") if task.due_date else "-"
@@ -133,7 +144,8 @@ class Tasks:
         for task in self.tasks:
             if task.unique_id == task_id:
                 task.mark_complete()
-                print(f"Completed task {task_id}")
+                formatted_id = self._format_id(task_id)
+                print(f"Completed task {formatted_id}")
                 return
         raise ValueError(f"Task ID {task_id} not found")
 
@@ -187,5 +199,6 @@ class Tasks:
         new_task = Task(name.strip(), priority, parsed_due)
         self.tasks.append(new_task)
         task_id = new_task.unique_id
-        print(f"Created Task {task_id}")
+        formatted_id = self._format_id(task_id)
+        print(f"Created Task {formatted_id}")
         return task_id
