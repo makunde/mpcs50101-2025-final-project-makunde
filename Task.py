@@ -60,6 +60,29 @@ class Tasks:
         """Picle your task list to a file"""
         # your code here
 
+    def _sort_tasks(self, tasks):
+        """Sort tasks by due date and priority.
+        
+        Sorting rules:
+        - Tasks with due dates come first, sorted by due date
+        - Tasks without due dates come last
+        - Within each group, sort by decreasing priority (3, 2, 1)
+        
+        Args:
+            tasks: List of Task objects to sort
+            
+        Returns:
+            Sorted list of Task objects
+        """
+        return sorted(
+            tasks,
+            key=lambda t: (
+                t.due_date is None,
+                t.due_date if t.due_date is not None else None,
+                -t.priority
+            )
+        )
+
     def _display_tasks(self, tasks):
         """Display a list of tasks in formatted table.
         
@@ -88,14 +111,7 @@ class Tasks:
         if not incomplete_tasks:
             print("No incomplete tasks.")
             return
-        sorted_tasks = sorted(
-            incomplete_tasks,
-            key=lambda t: (
-                t.due_date is None,
-                t.due_date if t.due_date is not None else None,
-                -t.priority
-            )
-        )
+        sorted_tasks = self._sort_tasks(incomplete_tasks)
 
         self._display_tasks(sorted_tasks)
 
@@ -122,14 +138,7 @@ class Tasks:
                     matching_tasks.append(task)
                     break
 
-        sorted_tasks = sorted(
-            matching_tasks,
-            key=lambda t: (
-                t.due_date is None,
-                t.due_date if t.due_date is not None else None,
-                -t.priority
-            )
-        )
+        sorted_tasks = self._sort_tasks(matching_tasks)
         
         self._display_tasks(sorted_tasks)
 
