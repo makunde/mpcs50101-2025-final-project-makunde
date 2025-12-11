@@ -12,6 +12,7 @@ from datetime import datetime
 import re
 import pickle
 import os
+from pathlib import Path
 
 
 class Task:
@@ -67,7 +68,7 @@ class Task:
 class Tasks:
     """A list of `Task` objects."""
     
-    TASKS_FILE = ".tasks.pkl"
+    TASKS_FILE = os.path.join(Path.home(), ".tasks.pkl")
     
     def __init__(self):
         self.tasks = []

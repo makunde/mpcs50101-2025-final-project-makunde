@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Fancy task managers with slick user interfaces are slow and cumbersome.
 Now that you have the power of the command line at your disposal, you
