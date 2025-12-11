@@ -118,8 +118,24 @@ class Tasks:
     def report(self):
         pass
 
-    def done(self):
-        pass
+    def done(self, task_id):
+        """Mark a task as complete by its unique ID.
+        
+        Args:
+            task_id (int): The unique ID of the task to mark as complete
+            
+        Raises:
+            ValueError: If task ID is not found or is invalid
+        """
+        if not isinstance(task_id, int):
+            raise ValueError("Task ID must be an integer")
+
+        for task in self.tasks:
+            if task.unique_id == task_id:
+                task.mark_complete()
+                print(f"Completed task {task_id}")
+                return
+        raise ValueError(f"Task ID {task_id} not found")
 
     def query(self, search_terms):
         """Search for tasks matching any of the search terms (case-insensitive).
