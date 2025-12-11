@@ -94,27 +94,47 @@ class Tasks:
             )
         )
 
-    def _display_tasks(self, tasks):
+    def _display_tasks(self, tasks, report=False):
         """Display a list of tasks in formatted table.
         
         Args:
             tasks: List of Task objects to display
+            report: If True, show report format with created/completed dates;
+                   if False, show standard list format (default: False)
         """
         if not tasks:
             print("No tasks found.")
             return
         
-        print(f"{'ID':<5} {'Age':<5} {'Due Date':<11} {'Priority':<10} {'Task'}")
-        print("-" * 70)
-        
-        for task in tasks:
-            task_id = self._format_id(task.unique_id)
-            age = (datetime.now().date() - task.created.date()).days
-            age_str = f"{age}d"
-            due_date_str = task.due_date.strftime("%m/%d/%Y") if task.due_date else "-"
-            priority = task.priority
-            name = task.name
-            print(f"{task_id:<5} {age_str:<5} {due_date_str:<11} {priority:<10} {name}")
+        if report:
+            # Report format with created and completed dates
+            print(f"{'ID':<5} {'Age':<5} {'Due Date':<11} {'Priority':<10} {'Task':<20} {'Created':<30} {'Completed'}")
+            print("-" * 120)
+            
+            for task in tasks:
+                task_id = self._format_id(task.unique_id)
+                age = (datetime.now().date() - task.created.date()).days
+                age_str = f"{age}d"
+                due_date_str = task.due_date.strftime("%m/%d/%Y") if task.due_date else "-"
+                priority = task.priority
+                name = task.name[:17] + ".." if len(task.name) > 19 else task.name
+                created_str = task.created.strftime("%a %b %d %H:%M:%S %Z %Y")
+                completed_str = task.completed.strftime("%a %b %d %H:%M:%S %Z %Y") if task.completed else "-"
+                
+                print(f"{task_id:<5} {age_str:<5} {due_date_str:<11} {priority:<10} {name:<20} {created_str:<30} {completed_str}")
+        else:
+            # Standard list format
+            print(f"{'ID':<5} {'Age':<5} {'Due Date':<11} {'Priority':<10} {'Task'}")
+            print("-" * 70)
+            
+            for task in tasks:
+                task_id = self._format_id(task.unique_id)
+                age = (datetime.now().date() - task.created.date()).days
+                age_str = f"{age}d"
+                due_date_str = task.due_date.strftime("%m/%d/%Y") if task.due_date else "-"
+                priority = task.priority
+                name = task.name
+                print(f"{task_id:<5} {age_str:<5} {due_date_str:<11} {priority:<10} {name}")
 
     def list(self):
         """Display a list of incomplete tasks sorted by due date and priority."""
@@ -127,7 +147,17 @@ class Tasks:
         self._display_tasks(sorted_tasks)
 
     def report(self):
-        pass
+        """Display a report of all tasks (completed and incomplete).
+        
+        Follows the same sorting order as --list command.
+        Shows created and completed dates for each task.
+        """
+        if not self.tasks:
+            print("No tasks found.")
+            return
+        
+        sorted_tasks = self._sort_tasks(self.tasks)
+        self._display_tasks(sorted_tasks, report=True)
 
     def delete(self, task_id):
         """Delete a task by its unique ID.
