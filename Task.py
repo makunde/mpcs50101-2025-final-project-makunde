@@ -10,6 +10,8 @@ task with no due date and a task with a due date.
 
 from datetime import datetime
 import re
+import pickle
+import os
 
 
 class Task:
@@ -30,7 +32,7 @@ class Task:
         self.created = datetime.now()
         self.completed = None
         self.name = name
-        self.unique_id = Task._id_counter 
+        self.unique_id = Task._id_counter
         Task._id_counter += 1
         self.priority = priority
         self.due_date = due
@@ -38,6 +40,20 @@ class Task:
     def mark_complete(self):
         """Mark the task as completed with current date/time"""
         self.completed = datetime.now()
+
+    @classmethod
+    def set_id_counter(cls, value):
+        """Set the ID counter to a specific value.
+        
+        Args:
+            value (int): The new ID counter value
+            
+        Raises:
+            ValueError: If value is not a positive integer
+        """
+        if not isinstance(value, int) or value < 1:
+            raise ValueError("ID must be a positive integer")
+        cls._id_counter = value
 
     def __repr__(self):
         return (f"Task(id={self.unique_id}, name='{self.name}', priority={self.priority}, "
@@ -50,15 +66,36 @@ class Task:
 
 class Tasks:
     """A list of `Task` objects."""
+    
+    TASKS_FILE = "tasks.pkl"
+    
     def __init__(self):
-        """Read pickled tasks file into a list"""
-        # List of Task objects
-        self.tasks = [] 
-        # your code here
+        self.tasks = []
+        self._load_tasks()
+    
+    def _load_tasks(self):
+        """Load tasks from pickle file if it exists."""
+        if os.path.exists(self.TASKS_FILE):
+            try:
+                with open(self.TASKS_FILE, 'rb') as f:
+                    loaded_data = pickle.load(f)
+                    self.tasks = loaded_data.get('tasks', [])
+                    if self.tasks:
+                        max_id = max(task.unique_id for task in self.tasks)
+                        Task.set_id_counter(max_id + 1)
+            except (pickle.PickleError, IOError) as e:
+                print(f"Warning: Could not load tasks from {self.TASKS_FILE}: {e}")
+                self.tasks = []
 
     def pickle_tasks(self):
-        """Picle your task list to a file"""
-        # your code here
+        """Pickle your task list to a file"""
+        try:
+            data = {'tasks': self.tasks}
+            with open(self.TASKS_FILE, 'wb') as f:
+                pickle.dump(data, f)
+            print(f"Tasks saved to {self.TASKS_FILE}")
+        except IOError as e:
+            print(f"Error: Could not save tasks to {self.TASKS_FILE}: {e}")
 
     def _format_id(self, task_id):
         """Format task ID as 4-digit string with leading zeros.
@@ -107,7 +144,6 @@ class Tasks:
             return
         
         if report:
-            # Report format with created and completed dates
             print(f"{'ID':<5} {'Age':<5} {'Due Date':<11} {'Priority':<10} {'Task':<20} {'Created':<30} {'Completed'}")
             print("-" * 120)
             
@@ -123,7 +159,6 @@ class Tasks:
                 
                 print(f"{task_id:<5} {age_str:<5} {due_date_str:<11} {priority:<10} {name:<20} {created_str:<30} {completed_str}")
         else:
-            # Standard list format
             print(f"{'ID':<5} {'Age':<5} {'Due Date':<11} {'Priority':<10} {'Task'}")
             print("-" * 70)
             
