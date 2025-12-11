@@ -73,12 +73,10 @@ class Tasks:
                 -t.priority
             )
         )
-        
-        # Print header
+
         print(f"{'ID':<5} {'Age':<5} {'Due Date':<11} {'Priority':<10} {'Task'}")
         print("-" * 70)
-        
-        # Print each task
+
         for task in sorted_tasks:
             task_id = task.unique_id
             age = (datetime.now().date() - task.created.date()).days
@@ -86,7 +84,6 @@ class Tasks:
             due_date_str = task.due_date.strftime("%m/%d/%Y") if task.due_date else "-"
             priority = task.priority
             name = task.name
-            
             print(f"{task_id:<5} {age_str:<5} {due_date_str:<11} {priority:<10} {name}")
 
     def report(self):
