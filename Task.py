@@ -67,7 +67,7 @@ class Task:
 class Tasks:
     """A list of `Task` objects."""
     
-    TASKS_FILE = "tasks.pkl"
+    TASKS_FILE = ".tasks.pkl"
     
     def __init__(self):
         self.tasks = []
