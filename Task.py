@@ -9,6 +9,7 @@ task with no due date and a task with a due date.
 """
 
 from datetime import datetime
+import re
 
 
 class Task:
@@ -59,6 +60,28 @@ class Tasks:
         """Picle your task list to a file"""
         # your code here
 
+    def _display_tasks(self, tasks):
+        """Display a list of tasks in formatted table.
+        
+        Args:
+            tasks: List of Task objects to display
+        """
+        if not tasks:
+            print("No tasks found.")
+            return
+        
+        print(f"{'ID':<5} {'Age':<5} {'Due Date':<11} {'Priority':<10} {'Task'}")
+        print("-" * 70)
+        
+        for task in tasks:
+            task_id = task.unique_id
+            age = (datetime.now().date() - task.created.date()).days
+            age_str = f"{age}d"
+            due_date_str = task.due_date.strftime("%m/%d/%Y") if task.due_date else "-"
+            priority = task.priority
+            name = task.name
+            print(f"{task_id:<5} {age_str:<5} {due_date_str:<11} {priority:<10} {name}")
+
     def list(self):
         """Display a list of incomplete tasks sorted by due date and priority."""
         incomplete_tasks = [task for task in self.tasks if task.completed is None]
@@ -74,17 +97,7 @@ class Tasks:
             )
         )
 
-        print(f"{'ID':<5} {'Age':<5} {'Due Date':<11} {'Priority':<10} {'Task'}")
-        print("-" * 70)
-
-        for task in sorted_tasks:
-            task_id = task.unique_id
-            age = (datetime.now().date() - task.created.date()).days
-            age_str = f"{age}d"
-            due_date_str = task.due_date.strftime("%m/%d/%Y") if task.due_date else "-"
-            priority = task.priority
-            name = task.name
-            print(f"{task_id:<5} {age_str:<5} {due_date_str:<11} {priority:<10} {name}")
+        self._display_tasks(sorted_tasks)
 
     def report(self):
         pass
@@ -92,8 +105,33 @@ class Tasks:
     def done(self):
         pass
 
-    def query(self):
-        pass
+    def query(self, search_terms):
+        """Search for tasks matching any of the search terms (case-insensitive).
+        
+        Args:
+            search_terms: String of search terms separated by spaces
+            Only incomplete tasks are returned.
+        """
+        search_terms = search_terms.split()
+
+        incomplete_tasks = [task for task in self.tasks if task.completed is None]
+        matching_tasks = []
+        for task in incomplete_tasks:
+            for term in search_terms:
+                if re.search(re.escape(term), task.name, re.IGNORECASE):
+                    matching_tasks.append(task)
+                    break
+
+        sorted_tasks = sorted(
+            matching_tasks,
+            key=lambda t: (
+                t.due_date is None,
+                t.due_date if t.due_date is not None else None,
+                -t.priority
+            )
+        )
+        
+        self._display_tasks(sorted_tasks)
 
     def add(self, name, priority=1, due=None):
         """Add a new task to the task list.
